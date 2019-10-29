@@ -73,7 +73,7 @@ class _TaskDialogState extends State<TaskDialog> {
               decoration: InputDecoration(labelText: 'Prioridade de 1 a 5'),
               validator: (text) {
                 if (text.isEmpty || int.parse(text) < 1 || int.parse(text) > 5)
-                  return "Insira a prioridade ( 1 a 5)!";
+                  return "Insira a prioridade ( 1 A 5)!";
                 else
                   return null;
               },

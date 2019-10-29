@@ -41,7 +41,12 @@ class TaskHelper {
         await database.rawQuery("SELECT COUNT(*) FROM task"));
   }
 
-
+  Future<int> getIsDone() async {
+    Database database = await db;
+    var x = await database.rawQuery("SELECT COUNT(*) FROM task WHERE isDone = 1");
+    int count = Sqflite.firstIntValue(x);
+    return count;
+  }
 
   Future close() async {
     Database database = await db;
@@ -89,12 +94,5 @@ class TaskHelper {
     List listMap = await database.rawQuery("SELECT * FROM task");
     List<Task> stuffList = listMap.map((x) => Task.fromMap(x)).toList();
     return stuffList;
-  }
-
-  Future<int> getIsDone() async {
-    Database database = await db;
-    var x = await database.rawQuery("SELECT COUNT(*) FROM task WHERE isDone = 1");
-    int count = Sqflite.firstIntValue(x);
-    return count;
   }
 }
