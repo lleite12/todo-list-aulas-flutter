@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todo_list/helpers/task_helper.dart';
 import 'package:todo_list/models/task.dart';
 import 'package:todo_list/views/task_dialog.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,8 +15,18 @@ class _HomePageState extends State<HomePage> {
   List<Task> _taskList = [];
   TaskHelper _helper = TaskHelper();
   bool _loading = true;
+  bool _loading2 = true;
+  double _lenghtBD;
+  double _percentIsDone;
+  List<Color> _colorsList = [
+    Colors.blue.shade100,
+    Colors.green.shade100,
+    Colors.yellow.shade100,
+    Colors.orange.shade100,
+    Colors.red.shade100
+  ];
 
-  @override
+   @override
   void initState() {
     super.initState();
     _helper.getAll().then((list) {
@@ -23,6 +34,27 @@ class _HomePageState extends State<HomePage> {
         _taskList = list;
         _loading = false;
       });
+    });
+    _helper.getCount().then((data) {
+      setState(() {
+        _lenghtBD = double.parse(data.toString());
+      });
+    });
+    _helper.getIsDone().then((data) {
+      setState(() {
+        double x = double.parse(data.toString());
+        _percentIsDone = x / _lenghtBD;
+        _loading2 = false;
+      });
+    });
+  }
+
+  void updateLinearPercent() async {
+    int x = await _helper.getCount();
+    int y = await _helper.getIsDone();
+    setState(() {
+      _percentIsDone = double.parse(y.toString()) / double.parse(x.toString());
+      print(" %$_percentIsDone");
     });
   }
 
@@ -42,10 +74,17 @@ class _HomePageState extends State<HomePage> {
         child: _loading ? CircularProgressIndicator() : Text("Sem tarefas!"),
       );
     } else {
-      return ListView.builder(
-        itemBuilder: _buildTaskItemSlidable,
-        itemCount: _taskList.length,
-      );
+      return Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Colors.white, Colors.grey.shade50])),
+          child: ListView.separated(
+            itemBuilder: _buildTaskItemSlidable,
+            itemCount: _taskList.length,
+            separatorBuilder: (BuildContext context, int index) => Divider(),
+          ));
     }
   }
 

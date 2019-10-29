@@ -30,6 +30,7 @@ class TaskHelper {
           "id INTEGER PRIMARY KEY, "
           "title TEXT, "
           "description TEXT, "
+          "priority TEXT, "
           "isDone INTEGER)");
     });
   }
@@ -39,6 +40,8 @@ class TaskHelper {
     return Sqflite.firstIntValue(
         await database.rawQuery("SELECT COUNT(*) FROM task"));
   }
+
+
 
   Future close() async {
     Database database = await db;
@@ -54,7 +57,7 @@ class TaskHelper {
   Future<Task> getById(int id) async {
     Database database = await db;
     List<Map> maps = await database.query('task',
-        columns: ['id', 'title', 'description', 'isDone'],
+        columns: ['id', 'title', 'description', 'priority', 'isDone'],
         where: 'id = ?',
         whereArgs: [id]);
 
@@ -86,5 +89,12 @@ class TaskHelper {
     List listMap = await database.rawQuery("SELECT * FROM task");
     List<Task> stuffList = listMap.map((x) => Task.fromMap(x)).toList();
     return stuffList;
+  }
+
+  Future<int> getIsDone() async {
+    Database database = await db;
+    var x = await database.rawQuery("SELECT COUNT(*) FROM task WHERE isDone = 1");
+    int count = Sqflite.firstIntValue(x);
+    return count;
   }
 }
